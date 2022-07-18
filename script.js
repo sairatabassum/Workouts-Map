@@ -61,6 +61,7 @@ const inputElevation = document.querySelector('.form__input--elevation');
 class App {
   #map;
   #mapEvent;
+  #workouts = [];
 
   constructor() {
     this._getPosition();
@@ -83,6 +84,8 @@ class App {
 
   //////////////////////////////
   _loadMap(position) {
+    inputType.value = 'running';
+
     const { latitude } = position.coords;
     const { longitude } = position.coords;
     console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
@@ -125,6 +128,8 @@ class App {
     const type = inputType.value;
     const distance = Number(inputDistance.value);
     const duration = Number(inputDuration.value);
+    const { lat, lng } = this.#mapEvent.latlng;
+    let workout;
 
     // If workout running, create running object
     if (type === 'running') {
@@ -142,6 +147,8 @@ class App {
         )
       )
         return alert('Inputs have to be positive numbers');
+
+      workout = new Running([lat, lng], distance, duration, cadence);
     }
 
     // If workout cycling, reate cycling object
@@ -152,26 +159,16 @@ class App {
         !allPositive(distance, duration)
       )
         return alert('Inputs have to be positive numbers');
+
+      workout = new Cycling([lat, lng], distance, duration, elevation);
     }
 
     // Add new object to workout array
+    this.#workouts.push(workout);
+    console.log(workout);
 
     // Render workout on map as marker
-    console.log(this.#mapEvent);
-    const { lat, lng } = this.#mapEvent.latlng;
-    L.marker([lat, lng])
-      .addTo(this.#map)
-      .bindPopup(
-        L.popup({
-          maxWidth: 250,
-          minWidth: 100,
-          autoClose: false,
-          closeOnClick: false,
-          className: 'running-popup',
-        })
-      )
-      .setPopupContent('Workout')
-      .openPopup();
+    this.renderWorkoutMarker(workout);
 
     // Render workout on list
 
@@ -182,6 +179,23 @@ class App {
       inputDuration.value =
       inputElevation.value =
         '';
+  }
+
+  renderWorkoutMarker(workout) {
+    // console.log(this.#mapEvent);
+    L.marker([lat, lng])
+      .addTo(this.#map)
+      .bindPopup(
+        L.popup({
+          maxWidth: 250,
+          minWidth: 100,
+          autoClose: false,
+          closeOnClick: false,
+          className: `${type}-popup`,
+        })
+      )
+      .setPopupContent(workout.distance)
+      .openPopup();
   }
 }
 
