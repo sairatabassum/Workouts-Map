@@ -82,9 +82,26 @@ body {
 .workout__title {
   font-size: 1.7rem;
   font-weight: 600;
-  grid-column: 1 / -1;
+  grid-column: 1 / 4;
 }
 
+.icon {
+  font-size: 20px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.fa {
+  padding: 5px;
+  color: rgba(232, 72, 72, 0.938);
+}
+.fa-running {
+  color: var(--color-brand--2);
+}
+.fa-cycling {
+  color: var(--color-brand--1);
+}
 .workout__details {
   display: flex;
   align-items: baseline;

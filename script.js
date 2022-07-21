@@ -71,6 +71,7 @@ class App {
   #map;
   #mapEvent;
   #workouts = [];
+  #markers = [];
 
   constructor() {
     // Get user's position
@@ -99,7 +100,6 @@ class App {
   //////////////////////////////
   _loadMap(position) {
     inputType.value = 'running';
-
     const { latitude } = position.coords;
     const { longitude } = position.coords;
     console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
@@ -214,7 +214,7 @@ class App {
   /////////////////////////////////////////
   _renderWorkoutMarker(workout) {
     // console.log(this.#mapEvent);
-    L.marker(workout.coords)
+    const marker = L.marker(workout.coords)
       .addTo(this.#map)
       .bindPopup(
         L.popup({
@@ -222,13 +222,14 @@ class App {
           minWidth: 100,
           autoClose: false,
           closeOnClick: false,
-          className: `${workout.type}-popup`,
+          className: `${workout.type}-popup close-${workout.id}`,
         })
       )
       .setPopupContent(
         `${workout.type === 'running' ? '🏃‍♂️' : '🚴‍♂️'} ${workout.description}`
       )
       .openPopup();
+    this.#markers.push(marker);
   }
   ////////////////////////////////////////
   _renderWorkout(workout) {
@@ -236,6 +237,13 @@ class App {
       workout.id
     }">
     <h2 class="workout__title">${workout.description}</h2>
+
+    <div class="icon">
+    <i class="fa fa-edit fa-${workout.type}"></i>
+    <i class="fa fa-trash-o"></i>
+    </div>
+
+
     <div class="workout__details">
       <span class="workout__icon"> ${workout.type === 'running' ? '🏃‍♂️' : '🚴‍♂️'}
       </span>
@@ -276,8 +284,32 @@ class App {
   </li>`;
     }
     form.insertAdjacentHTML('afterend', html);
+
+    // Close event listener
+    const close = document.querySelector('.fa-trash-o');
+    close.addEventListener('click', this._closeWorkout.bind(this));
   }
 
+  /////////////////////////////////
+  _closeWorkout(e) {
+    const workOut = e.target.closest('.workout');
+    workOut.remove();
+    const workout1 = this.#workouts.find(
+      work => work.id === workOut.dataset.id
+    );
+
+    const workout2 = this.#markers.find(work => {
+      if (
+        work._latlng.lat === workout1.coords[0] &&
+        work._latlng.lng === workout1.coords[1]
+      ) {
+        return work;
+      }
+    });
+    this.#map.removeLayer(workout2);
+  }
+
+  ///////////////////////////////////
   _moveToPopUp(e) {
     const workoutEl = e.target.closest('.workout');
 
