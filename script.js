@@ -307,6 +307,16 @@ class App {
       }
     });
     this.#map.removeLayer(workout2);
+    let items = JSON.parse(localStorage.getItem('workout'));
+
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].id === workOut.dataset.id) {
+        console.log(items[i], workout2);
+        items.splice(i, 1);
+        break;
+      }
+    }
+    localStorage.setItem('workout', JSON.stringify(items));
   }
 
   ///////////////////////////////////
@@ -331,7 +341,12 @@ class App {
   }
 
   _getLocalStorage() {
-    const data = JSON.parse(localStorage.getItem('workout'));
+    let data;
+    try {
+      data = JSON.parse(localStorage.getItem('workout'));
+    } catch (err) {
+      console.log(err.message);
+    }
 
     if (!data) return;
 
@@ -343,6 +358,7 @@ class App {
 
   reset() {
     localStorage.removeItem('workout');
+
     location.reload();
   }
 }
