@@ -125,7 +125,6 @@ class App {
     this.#mapEvent = mapE;
     form.classList.remove('hidden');
     form.style.display = 'grid';
-
     inputDistance.focus();
   }
 
@@ -160,9 +159,19 @@ class App {
     const type = inputType.value;
     const distance = Number(inputDistance.value);
     const duration = Number(inputDuration.value);
-    const { lat, lng } = this.#mapEvent.latlng;
+    let lat,
+      lng,
+      flag = 0;
+    console.log(this.#mapEvent);
+    if (this.#mapEvent.latlng) {
+      lat = this.#mapEvent.latlng.lat;
+      lng = this.#mapEvent.latlng.lng;
+    } else {
+      lat = this.#mapEvent.coords[0];
+      lng = this.#mapEvent.coords[1];
+      flag = 1;
+    }
     let workout;
-
     // If workout running, create running object
     if (type === 'running') {
       const cadence = Number(inputCadence.value);
@@ -195,20 +204,29 @@ class App {
       workout = new Cycling([lat, lng], distance, duration, elevation);
     }
 
-    // Add new object to workout array
-    this.#workouts.push(workout);
+    if (!flag) {
+      // Add new object to workout array
+      this.#workouts.push(workout);
 
-    // Render workout on map as marker
-    this._renderWorkoutMarker(workout);
+      // Render workout on map as marker
+      this._renderWorkoutMarker(workout);
 
-    // Render workout on list
-    this._renderWorkout(workout);
+      // Render workout on list
+      this._renderWorkout(workout);
+    } else {
+      const index = this.#workouts.findIndex(
+        work => work.id === this.#mapEvent.id
+      );
+      this.#workouts[index] = workout;
+      console.log(this.#mapEvent.id);
+    }
 
     // Hide form + Clear input fileds
     this._hideForm();
 
     // Set local storage to all workouts
     this._setLocalStorage();
+    console.log(this.#workouts);
   }
 
   /////////////////////////////////////////
@@ -288,6 +306,31 @@ class App {
     // Close event listener
     const close = document.querySelector('.fa-trash-o');
     close.addEventListener('click', this._closeWorkout.bind(this));
+
+    // Edit event listener
+    const edit = document.querySelector('.fa-edit');
+    edit.addEventListener('click', this._editWorkout.bind(this));
+  }
+
+  /////////////////////////////////
+  _editWorkout(e) {
+    const workOut = e.target.closest('.workout');
+    const workout = this.#workouts.find(work => work.id === workOut.dataset.id);
+    this._showForm(workout);
+    inputDistance.value = workout.distance;
+    inputDuration.value = workout.duration;
+    inputType.value = workout.type;
+    if (inputType.value === 'running') {
+      inputElevation.closest('.form__row').classList.add('form__row--hidden');
+      inputCadence.closest('.form__row').classList.remove('form__row--hidden');
+      inputCadence.value = workout.cadence;
+    } else if (inputType.value === 'cycling') {
+      inputElevation
+        .closest('.form__row')
+        .classList.remove('form__row--hidden');
+      inputCadence.closest('.form__row').classList.add('form__row--hidden');
+      inputElevation.value = workout.elevation;
+    }
   }
 
   /////////////////////////////////
@@ -311,7 +354,6 @@ class App {
 
     for (let i = 0; i < items.length; i++) {
       if (items[i].id === workOut.dataset.id) {
-        console.log(items[i], workout2);
         items.splice(i, 1);
         break;
       }
@@ -336,10 +378,13 @@ class App {
       },
     });
   }
+
+  //////////////////////////////////
   _setLocalStorage() {
     localStorage.setItem('workout', JSON.stringify(this.#workouts));
   }
 
+  ///////////////////////////////////////
   _getLocalStorage() {
     let data;
     try {
@@ -356,6 +401,7 @@ class App {
     });
   }
 
+  /////////////////////////////
   reset() {
     localStorage.removeItem('workout');
 
