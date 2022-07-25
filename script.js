@@ -218,7 +218,35 @@ class App {
         work => work.id === this.#mapEvent.id
       );
       this.#workouts[index] = workout;
-      console.log(this.#mapEvent.id);
+      const Duration = document.querySelector(`.duration-${this.#mapEvent.id}`);
+      const Distance = document.querySelector(`.distance-${this.#mapEvent.id}`);
+      const s =
+        workout.type === 'running'
+          ? `pace-${this.#mapEvent.id}`
+          : `speed-${this.#mapEvent.id}`;
+      const v =
+        workout.type === 'running'
+          ? `cadence-${this.#mapEvent.id}`
+          : `elevation-${this.#mapEvent.id}`;
+
+      const Speed = document.querySelector(`.${s}`);
+      const Value = document.querySelector(`.${v}`);
+      const ID = `data-id="${this.#mapEvent.id}"`;
+      const id = document.querySelector(`[${ID}]`);
+
+      console.log(id, workout.id, ID);
+
+      Distance.innerHTML = workout.distance;
+      Duration.innerHTML = workout.duration;
+      Speed.innerHTML =
+        workout.type === 'running'
+          ? `${workout.pace.toFixed(1)}`
+          : `${workout.speed.toFixed(1)}`;
+      Value.innerHTML =
+        workout.type === 'running'
+          ? `${workout.cadence}`
+          : `${workout.elevation}`;
+      id.setAttribute('data-id', `${workout.id}`);
     }
 
     // Hide form + Clear input fileds
@@ -226,7 +254,7 @@ class App {
 
     // Set local storage to all workouts
     this._setLocalStorage();
-    console.log(this.#workouts);
+    console.log(workout);
   }
 
   /////////////////////////////////////////
@@ -265,24 +293,32 @@ class App {
     <div class="workout__details">
       <span class="workout__icon"> ${workout.type === 'running' ? '🏃‍♂️' : '🚴‍♂️'}
       </span>
-      <span class="workout__value">${workout.distance}</span>
+      <span class="workout__value distance-${workout.id}">${
+      workout.distance
+    }</span>
       <span class="workout__unit">km</span>
     </div>
     <div class="workout__details">
       <span class="workout__icon">⏱</span>
-      <span class="workout__value">${workout.duration}</span>
+      <span class="workout__value duration-${workout.id}">${
+      workout.duration
+    }</span>
       <span class="workout__unit">min</span>
     </div>`;
 
     if (workout.type === 'running') {
       html += ` <div class="workout__details">
       <span class="workout__icon">⚡️</span>
-      <span class="workout__value">${workout.pace.toFixed(1)}</span>
+      <span class="workout__value pace-${workout.id}">${workout.pace.toFixed(
+        1
+      )}</span>
       <span class="workout__unit">min/km</span>
     </div>
     <div class="workout__details">
       <span class="workout__icon">🦶🏼</span>
-      <span class="workout__value">${workout.cadence}</span>
+      <span class="workout__value cadence-${workout.id}">${
+        workout.cadence
+      }</span>
       <span class="workout__unit">spm</span>
     </div>
   </li>`;
@@ -291,12 +327,16 @@ class App {
     if (workout.type === 'cycling') {
       html += `<div class="workout__details">
       <span class="workout__icon">⚡️</span>
-      <span class="workout__value">${workout.speed.toFixed(1)}</span>
+      <span class="workout__value speed-${workout.id}">${workout.speed.toFixed(
+        1
+      )}</span>
       <span class="workout__unit">km/h</span>
     </div>
     <div class="workout__details">
       <span class="workout__icon">⛰</span>
-      <span class="workout__value">${workout.elevation}</span>
+      <span class="workout__value elevation-${workout.id}">${
+        workout.elevation
+      }</span>
       <span class="workout__unit">m</span>
     </div>
   </li>`;
