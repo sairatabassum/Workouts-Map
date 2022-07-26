@@ -162,6 +162,7 @@ class App {
     let lat,
       lng,
       flag = 0;
+
     if (this.#mapEvent.latlng) {
       lat = this.#mapEvent.latlng.lat;
       lng = this.#mapEvent.latlng.lng;
@@ -170,6 +171,7 @@ class App {
       lng = this.#mapEvent.coords[1];
       flag = 1;
     }
+
     let workout;
     // If workout running, create running object
     if (type === 'running') {
