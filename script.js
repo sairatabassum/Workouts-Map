@@ -126,6 +126,7 @@ class App {
     form.classList.remove('hidden');
     form.style.display = 'grid';
     inputDistance.focus();
+    document.querySelector('.form__input--type').disabled = false;
   }
 
   /////////////////////////////////
@@ -162,7 +163,6 @@ class App {
     let lat,
       lng,
       flag = 0;
-    console.log(this.#mapEvent);
     if (this.#mapEvent.latlng) {
       lat = this.#mapEvent.latlng.lat;
       lng = this.#mapEvent.latlng.lng;
@@ -240,6 +240,13 @@ class App {
       });
 
       id.setAttribute('data-id', `${workout.id}`);
+      if (workout.type === 'running') {
+        id.classList.remove('workout--cycling');
+        id.classList.add('workout--running');
+      } else {
+        id.classList.add('workout--cycling');
+        id.classList.remove('workout--running');
+      }
     }
 
     // Hide form + Clear input fileds
@@ -247,7 +254,6 @@ class App {
 
     // Set local storage to all workouts
     this._setLocalStorage();
-    console.log(workout);
   }
 
   /////////////////////////////////////////
@@ -338,6 +344,7 @@ class App {
     const workOut = e.target.closest('.workout');
     const workout = this.#workouts.find(work => work.id === workOut.dataset.id);
     this._showForm(workout);
+    document.querySelector('.form__input--type').disabled = true;
     inputDistance.value = workout.distance;
     inputDuration.value = workout.duration;
     inputType.value = workout.type;
