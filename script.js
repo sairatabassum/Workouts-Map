@@ -86,7 +86,7 @@ class App {
     containerWorkouts.addEventListener('click', this._moveToPopUp.bind(this));
   }
 
-  /////////////////////////////////
+  ////////////////////////////////////////
   _getPosition() {
     if (navigator.geolocation)
       navigator.geolocation.getCurrentPosition(
@@ -97,7 +97,7 @@ class App {
       );
   }
 
-  //////////////////////////////
+  ////////////////////////////////////////
   _loadMap(position) {
     inputType.value = 'running';
     const { latitude } = position.coords;
@@ -120,7 +120,7 @@ class App {
     });
   }
 
-  ///////////////////////////////////
+  ////////////////////////////////////////
   _showForm(mapE) {
     this.#mapEvent = mapE;
     form.classList.remove('hidden');
@@ -129,7 +129,7 @@ class App {
     document.querySelector('.form__input--type').disabled = false;
   }
 
-  /////////////////////////////////
+  ////////////////////////////////////////
   _hideForm() {
     // Empty the inputs
     inputCadence.value =
@@ -139,16 +139,15 @@ class App {
         '';
     form.style.display = 'none';
     form.classList.add('hidden');
-    // setTimeout(() => (form.style.display = 'grid'), 1000);
   }
 
-  /////////////////////////////////////
+  ////////////////////////////////////////
   _toggleElevationField() {
     inputElevation.closest('.form__row').classList.toggle('form__row--hidden');
     inputCadence.closest('.form__row').classList.toggle('form__row--hidden');
   }
 
-  //////////////////////////////////
+  ////////////////////////////////////////
   _newWorkout(e) {
     const validInputs = (...inputs) =>
       inputs.every(inp => Number.isFinite(inp));
@@ -240,13 +239,6 @@ class App {
       });
 
       id.setAttribute('data-id', `${workout.id}`);
-      if (workout.type === 'running') {
-        id.classList.remove('workout--cycling');
-        id.classList.add('workout--running');
-      } else {
-        id.classList.add('workout--cycling');
-        id.classList.remove('workout--running');
-      }
     }
 
     // Hide form + Clear input fileds
@@ -256,9 +248,8 @@ class App {
     this._setLocalStorage();
   }
 
-  /////////////////////////////////////////
+  ////////////////////////////////////////
   _renderWorkoutMarker(workout) {
-    // console.log(this.#mapEvent);
     const marker = L.marker(workout.coords)
       .addTo(this.#map)
       .bindPopup(
@@ -276,6 +267,7 @@ class App {
       .openPopup();
     this.#markers.push(marker);
   }
+
   ////////////////////////////////////////
   _renderWorkout(workout) {
     let html = `<li class="workout workout--${workout.type}" data-id="${
@@ -339,15 +331,17 @@ class App {
     edit.addEventListener('click', this._editWorkout.bind(this));
   }
 
-  /////////////////////////////////
+  ////////////////////////////////////////
   _editWorkout(e) {
     const workOut = e.target.closest('.workout');
     const workout = this.#workouts.find(work => work.id === workOut.dataset.id);
     this._showForm(workout);
     document.querySelector('.form__input--type').disabled = true;
+
     inputDistance.value = workout.distance;
     inputDuration.value = workout.duration;
     inputType.value = workout.type;
+
     if (inputType.value === 'running') {
       inputElevation.closest('.form__row').classList.add('form__row--hidden');
       inputCadence.closest('.form__row').classList.remove('form__row--hidden');
@@ -361,7 +355,7 @@ class App {
     }
   }
 
-  /////////////////////////////////
+  ////////////////////////////////////////
   _closeWorkout(e) {
     const workOut = e.target.closest('.workout');
     workOut.remove();
@@ -389,7 +383,7 @@ class App {
     localStorage.setItem('workout', JSON.stringify(items));
   }
 
-  ///////////////////////////////////
+  ////////////////////////////////////////
   _moveToPopUp(e) {
     const workoutEl = e.target.closest('.workout');
 
@@ -407,12 +401,12 @@ class App {
     });
   }
 
-  //////////////////////////////////
+  ////////////////////////////////////////
   _setLocalStorage() {
     localStorage.setItem('workout', JSON.stringify(this.#workouts));
   }
 
-  ///////////////////////////////////////
+  ////////////////////////////////////////
   _getLocalStorage() {
     let data;
     try {
@@ -429,7 +423,7 @@ class App {
     });
   }
 
-  /////////////////////////////
+  ////////////////////////////////////////
   reset() {
     localStorage.removeItem('workout');
 
